@@ -17,11 +17,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 //
 
-﻿using UnityEngine;
+ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
+ using GameWorld;
+ using Levels;
 
 public class ABGameWorld : ABSingleton<ABGameWorld> {
 
@@ -40,6 +42,9 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 	private Transform  _slingshotBaseTransform;
 
 	private GameObject _slingshot;
+	
+	private ABRandomAI _abRandomAI;
+	
 	public GameObject Slingshot() { return _slingshot; }
 
 	private GameObject _levelFailedBanner;
@@ -93,11 +98,11 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 
 		_levelCleared = false;
 
-		if(!_isSimulation) {
-
-			GetComponent<AudioSource>().PlayOneShot(_clips[0]);
-			GetComponent<AudioSource>().PlayOneShot(_clips[1]);
-		}
+		// if(!_isSimulation) {
+		//
+		// 	GetComponent<AudioSource>().PlayOneShot(_clips[0]);
+		// 	GetComponent<AudioSource>().PlayOneShot(_clips[1]);
+		// }
 
 		GameObject slingshot = GameObject.Find ("Slingshot");
 
@@ -128,14 +133,20 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 				
 				DecodeLevel (currentLevel);
 				AdaptCameraWidthToLevel ();
-
+				
 				_levelTimesTried = 0;
 			}
 		}
 
+		_abRandomAI = new ABRandomAI(this, _slingshot, _pigs, _birds);	
 		_slingshotBaseTransform = GameObject.Find ("slingshot_base").transform;
 	}
 
+	public bool Solve()
+	{
+		return _abRandomAI.Solve();
+	}
+	
 	public void DecodeLevel(ABLevel currentLevel)  {
 		
 		ClearWorld();
@@ -227,6 +238,7 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 		}
 		
 		StartWorld();
+		AIBirdsConnection.Instance.SceneChanged = true;
 	}
 
 	// Update is called once per frame
@@ -291,6 +303,12 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 		ABSceneManager.Instance.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
+	public void StartAI()
+	{
+
+		_abRandomAI.Solve();
+	}
+	
 	public void AddTrajectoryParticle(ABParticle trajectoryParticle) {
 
 		_birdTrajectory.Add (trajectoryParticle);
@@ -395,6 +413,16 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 		}
 		else {
 			
+			LevelData currentLevelData = LevelList.Instance.GetCurrentLevelData();
+			if (currentLevelData != null)
+			{
+				currentLevelData.HasBeenPlayed = true;
+				currentLevelData.Won = false;
+				currentLevelData.Score = HUD.Instance.GetScore();
+				currentLevelData.Death = HUD.Instance.GetDeath();
+				currentLevelData.BirdsUsed = HUD.Instance.GetBirdsUsed();
+			}
+			
 			// Player lost the game
 			HUD.Instance.gameObject.SetActive(false);
 
@@ -417,8 +445,18 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 			Invoke("ShowLevelClearedBanner", 1f);
 		}
 		else {
-			
 			// Player won the game
+			
+			LevelData currentLevelData = LevelList.Instance.GetCurrentLevelData();
+			if (currentLevelData != null)
+			{
+				currentLevelData.Won = true;
+				currentLevelData.HasBeenPlayed = true;
+				currentLevelData.Score = HUD.Instance.GetScore();
+				currentLevelData.Death = HUD.Instance.GetDeath();
+				currentLevelData.BirdsUsed = HUD.Instance.GetBirdsUsed();
+			}
+			
 			HUD.Instance.gameObject.SetActive(false);
 
 			_levelClearedBanner.SetActive(true);
@@ -449,7 +487,7 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 			return;
 		
 		_birds.Remove(bird);
-		
+
 		if(_birds.Count == 0) {
 			
 			// Check if player lost the game
@@ -569,7 +607,11 @@ public class ABGameWorld : ABSingleton<ABGameWorld> {
 		foreach(Transform b in _birdsTransform)
 			Destroy(b.gameObject);
 
-		_birds.Clear();		
+		_birds.Clear();
+
+		HUD.Instance.SetScore(0);
+		HUD.Instance.SetDeath(0);
+		HUD.Instance.SetBirdsUsed(0);
 	}
 
 	private void AdaptCameraWidthToLevel() {

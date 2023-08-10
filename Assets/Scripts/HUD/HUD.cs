@@ -17,7 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 //
 
-﻿using UnityEngine;
+ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -38,12 +38,20 @@ public class HUD : ABSingleton<HUD> {
 	private bool _isZoomingOut;
 	private bool _usedSpecialPower;
 
-	private uint _totalScore;
+	private uint _totalScore = 0;
+	private int _usedBird = 0;
+	private float _totalDamage = 0;
+	private int _totalDeath = 0;
 	private float _simulatedDragTimer;
 
 	private Vector3 _inputPos;
 	private Vector3 _dragOrigin;
 	private ABBird _selectedBird;
+
+	protected HUD() : base()
+	{
+		AIBirdsConnection.Instance.HUDInstance = this;
+	}
 
 	void Start() {
 
@@ -106,10 +114,14 @@ public class HUD : ABSingleton<HUD> {
 			isMouseControlling = false;
 		}
 
+		// Debug.Log("SimulateInputEvent: " + SimulateInputEvent + " Hash Code " + this.GetHashCode());
+		
 		if(Input.GetMouseButtonDown(0) || SimulateInputEvent == 1) {
 
 			ClickDown (_inputPos);
 
+			this.AddBird();
+			
 			if(!isMouseControlling)
 				SimulateInputEvent++;
         }
@@ -233,11 +245,58 @@ public class HUD : ABSingleton<HUD> {
 	public void AddScore(uint score) {
 		
 		_totalScore += score;
-		_scoreDisplay.GetComponent<Text>().text = _totalScore.ToString();
+		if (_scoreDisplay != null)
+			_scoreDisplay.GetComponent<Text>().text = _totalScore.ToString();
 	}
 
 	public uint GetScore() {
 
 		return _totalScore;
+	}
+	
+	public void SetScore(uint score) {
+
+		_totalScore = score;
+	}
+
+	public void AddDamage(float damage) {
+		
+		_totalDamage += damage;
+	}
+
+	public float GetDamage() {
+
+		return _totalDamage;
+	}
+
+	public void AddDeath() {
+		
+		_totalDeath += 1;
+	}
+
+	public void SetDeath(int death) {
+		
+		_totalDeath = death;
+	}
+
+	public int GetDeath() {
+
+		return _totalDeath;
+	}
+
+	public void AddBird()
+	{
+		_usedBird += 1;
+		print(_usedBird);
+	}
+
+	public int GetBirdsUsed()
+	{
+		return _usedBird;
+	}
+	
+	public void SetBirdsUsed(int bird)
+	{
+		_usedBird = bird;
 	}
 }

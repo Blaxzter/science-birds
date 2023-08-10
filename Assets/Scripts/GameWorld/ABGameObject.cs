@@ -17,9 +17,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 //
 
-﻿using UnityEngine;
+ using UnityEngine;
 using System;
 using System.Collections;
+ using Levels;
 
 [RequireComponent (typeof (Collider2D))]
 [RequireComponent (typeof (Rigidbody2D))]
@@ -69,6 +70,9 @@ public class ABGameObject : MonoBehaviour
 
 	public virtual void Die(bool withEffect = true)
 	{
+		if (this.GetType().Name == "ABPig") 
+			HUD.Instance.AddDeath();
+		
 		if(!ABGameWorld.Instance._isSimulation && withEffect) {
 
 			_destroyEffect._shootParticles = true;
@@ -94,6 +98,12 @@ public class ABGameObject : MonoBehaviour
 
 	public void DealDamage(float damage) {
 
+		LevelData currentLevelData = LevelList.Instance.GetCurrentLevelData();
+		if (currentLevelData != null)
+		{
+			currentLevelData.CumulativeDamage += damage;
+		}
+		
 		_currentLife -= damage;
 
 		if(_currentLife <= _life - (_life/(_sprites.Length + 1)) * (_spriteChangedTimes + 1))
@@ -101,8 +111,8 @@ public class ABGameObject : MonoBehaviour
 			if(_spriteChangedTimes < _sprites.Length)
 				_spriteRenderer.sprite = _sprites[_spriteChangedTimes];
 
-			if(!ABGameWorld.Instance._isSimulation)
-				_audioSource.PlayOneShot(_clips[(int)OBJECTS_SFX.DAMAGE]);
+			// if(!ABGameWorld.Instance._isSimulation)
+			// 	_audioSource.PlayOneShot(_clips[(int)OBJECTS_SFX.DAMAGE]);
 
 			_spriteChangedTimes++;
 		}
@@ -111,6 +121,11 @@ public class ABGameObject : MonoBehaviour
 			Die ();
 	}
 
+	public Bounds GetBounds()
+	{
+		return _collider.bounds;
+	}
+	
 	void DestroyIfOutScreen() {
 
 		if (ABGameWorld.Instance.IsObjectOutOfWorld (transform, _collider)) {

@@ -17,7 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>
 //
 
-﻿using UnityEngine;
+ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
@@ -64,12 +64,12 @@ public class ABSceneManager : ABSingleton<ABSceneManager> {
 
 		SceneManager.LoadScene(sceneName);
 
-		if (sceneName.EndsWith("Menu")) {
-			if(!ABAudioController.Instance.IsPlayingMusic(_backgroundMusic))
-				ABAudioController.Instance.PlayMusic(_backgroundMusic);
-		}
-		else
-			ABAudioController.Instance.StopMusic();
+		// if (sceneName.EndsWith("Menu")) {
+		// 	if(!ABAudioController.Instance.IsPlayingMusic(_backgroundMusic))
+		// 		ABAudioController.Instance.PlayMusic(_backgroundMusic);
+		// }
+		// else
+		// 	ABAudioController.Instance.StopMusic();
 
 		_currentScene = SceneManager.GetActiveScene ().buildIndex;
 		_currentSceneName = SceneManager.GetActiveScene ().name;

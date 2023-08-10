@@ -36,8 +36,11 @@ public class ABLevelSelect : ABMenu {
 	private int _clickedButton;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 
+		AIBirdsConnection.Instance.LevelLoaded = false;
+		
 		// Load levels in the resources folder
 		TextAsset []levelsData = Resources.LoadAll<TextAsset>(ABConstants.DEFAULT_LEVELS_FOLDER);
 
@@ -82,8 +85,6 @@ public class ABLevelSelect : ABMenu {
 			Vector2 pos = _startPos + new Vector2 ((i % _lines) * _buttonSize.x, j * _buttonSize.y);
 			obj.transform.position = pos;
 
-			Debug.Log(obj.transform.position);
-
 			ABLevelSelector sel = obj.AddComponent<ABLevelSelector> ();
 			sel.LevelIndex = i;
 
@@ -98,5 +99,6 @@ public class ABLevelSelect : ABMenu {
 			if ((i + 1) % _lines == 0)
 				j--;
 		}
+		AIBirdsConnection.Instance.LevelLoaded = true;
 	}
 }
