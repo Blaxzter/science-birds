@@ -1,4 +1,28 @@
+# Fork info:
+
+This fork was created for my master thesis. 
+```
+Utilizing generative adversarial networks for
+stable structure generation in a physics-based
+simulation.
+```
+It adds:
+- Data collection capabilities when a level is played: [LevelData](Assets/Scripts/Levels/LevelData.cs)
+- You can connect AI and generator at the same time. (2 ws sockets) [AIBirdsConnection.cs](Assets/Scripts/AIBirdsConnection.cs)
+- Extra ws capabilities:
+  - screenshotstructure
+  - simulatealllevels
+  - getdata
+  - levelsloaded
+  - solve (doesn't work)
+  - aimodus
+  - alllevelsplayed
+  - clearleveldata
+
+A example usage is shown in this [project](https://github.com/Blaxzter/Utilizing-Generative-Adversarial-Networks-for-Stable-Structure-Generation-in-Angry-Birds/tree/main).
+
 # Science Birds
+
 A cover version of the "Angry Birds" game used for research purposes.
 
 <p float="left">
