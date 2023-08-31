@@ -21,6 +21,8 @@ It adds:
 
 A example usage is shown in this [project](https://github.com/Blaxzter/Utilizing-Generative-Adversarial-Networks-for-Stable-Structure-Generation-in-Angry-Birds/tree/main).
 
+If for whatever reason the Resolution of the Game is wrong delete this registry entry: Computer\HKEY_CURRENT_USER\SOFTWARE\FredericMaster\ScienceBirds
+
 # Science Birds
 
 A cover version of the "Angry Birds" game used for research purposes.
